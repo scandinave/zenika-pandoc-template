@@ -1,0 +1,22 @@
+kind: pipeline
+type: docker
+name: default
+
+clone:
+  skip_verify: true
+
+steps:
+  - name: build
+    image: pandoc/extra
+    environment:
+      PASSWORD:
+        from_secret: GITEA_TOKEN
+      CI_HOST:
+        from_secret: CI_HOST
+    commands:
+      - apk add curl
+      - pandoc compte_rendu.md -o compte_rendu.pdf --template=template.tex
+      - 'curl --fail-with-body --user "scandinave:$PASSWORD" --upload-file compte_rendu.pdf "https://$CI_HOST/api/packages/$DRONE_REPO_OWNER/generic/cstb/$DRONE_SEMVER_SHORT/compte_rendu.pdf"'
+trigger:
+  event:
+  - tag

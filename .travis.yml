@@ -1,0 +1,5 @@
+language: generic
+dist: jammy
+script:
+  - apt install pandoc
+  - pandoc compte_rendu.md -o compte_rendu.pdf --template=template.tex
